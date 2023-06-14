@@ -1,5 +1,5 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { ResourceData } from '../../data/resource-data';
+import { PlaylistData } from '../../data/playlist-data';
 
 @Component({
   selector: 'app-carousel-card',
@@ -7,11 +7,10 @@ import { ResourceData } from '../../data/resource-data';
   styleUrls: ['./carousel-card.component.css']
 })
 export class CarouselCardComponent implements OnInit {
-  @Input() resource:ResourceData;
+  // get the playlist data from home-page component
+  @Input() resource:PlaylistData;
 
   constructor() { }
 
-  ngOnInit() {
-  }
-
+  ngOnInit() { }
 }

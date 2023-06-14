@@ -1,17 +1,11 @@
-<nav class="navbar navbar-expand-lg sticky-top navbar-light bg-light">
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item navbar-brand">
-        <a class="navbar-brand" href="/">
-          Playlist Visualization
-        </a>
-      </li>
-    </ul>
-    <ul class="navbar-nav navbar-right mr-auto">
-      <li class="nav-item">
-        <a class="btn btn-dark" role="button" href="http://localhost:8888/login">Log in</a>
-      </li>
-    </ul>
-  </nav>
-<main class="container-fluid">
+<header class="navbar navbar-expand-lg sticky-top navbar-light bg-dark">
+  <div class="w-100">
+    <a class="navbar-brand text-white" href="/">
+      Playlist Visualization
+    </a>
+  </div>
+  <a class="btn btn-light" role="button" href="http://localhost:8888/login">Log in</a>
+</header>
+<main class="mx-auto container">
 	<router-outlet></router-outlet>
 </main>

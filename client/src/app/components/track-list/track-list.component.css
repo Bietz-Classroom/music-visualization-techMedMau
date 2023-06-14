@@ -1,0 +1,14 @@
+.text_ellipsis{
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis;
+}
+
+.text_ellipsis:hover {
+    overflow: visible;
+    white-space: normal;
+}
+
+th {
+    white-space: nowrap;
+}

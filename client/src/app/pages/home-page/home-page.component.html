@@ -1,6 +1,20 @@
-<div class="row">
-	<app-search class="col-12"></app-search>
+<div class="">
+	<app-search class="d-flex flex-column justify-content-center align-items-center" (dataEvent)="receiveData($event)"></app-search>
 </div>
-<div class="row">
-	<app-vega-viz class="col-12"></app-vega-viz>
+<!-- <div class="" *ngIf="tracksLits">
+	<app-vega-viz class=""></app-vega-viz>
+</div> -->
+<div class="w-100 d-flex justify-content-center">
+	<div>
+		<app-carousel-card id="card" *ngFor="let resource of resources;" 
+				class="m-3 carousel-item active shadow rounded rounded-3 p-2" 
+				style="width: 366px;" 
+				[resource]="resource"
+				[class]="activeClass === resource.id ? 'clicked' : ''"
+				(click)="changeActive(resource.id)"></app-carousel-card>
+	</div>
+	<div class="ml-3 d-flex flex-column align-items-center" style="max-width: 774px;">
+		<app-vega-viz *ngIf="chartValues.length" [chartValues]="chartValues"></app-vega-viz>
+		<app-track-list class="p-2" *ngIf="tracks.length" [tracks]="tracks"></app-track-list>
+	</div>
 </div>

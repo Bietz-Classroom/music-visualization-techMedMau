@@ -198,7 +198,12 @@ router.get('/track/:id', function(req, res, next) {
 
 router.get('/track-audio-features/:id', function(req, res, next) {
 	var id = req.params.id;
-	makeAPIRequest('https://api.spotify.com/v1/audio-features/' + id, res);
+	makeAPIRequest('https://api.spotify.com/v1/audio-features?ids=' + id, res);
+});
+
+router.get('/:id/tracks', function(req, res, next) {
+	var id = req.params.id;
+	makeAPIRequest('https://api.spotify.com/v1/playlists/' + id + '/tracks', res);
 });
 
 module.exports = router;

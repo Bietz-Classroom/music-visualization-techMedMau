@@ -4,19 +4,25 @@ export class TrackFeature {
 	static FeatureTypes = ['danceability', 'energy', 'speechiness', 'acousticness', 'instrumentalness', 'liveness', 'valence'];
 
 	id:string;
-	name:string;
-	percent:number;
+	valence:number;
+	energy:number;
 
-	constructor(feature:string, percent:number) {
-		this.name = feature;
-		this.percent = percent;
+
+	constructor(objectModel:{}) {
+		this.id = objectModel['id'];
+		this.valence = objectModel[TrackFeature.FeatureTypes[6]];
+		this.energy = objectModel[TrackFeature.FeatureTypes[1]];
 	}
 
-	get percentageString() {
-		return (this.percent*100).toFixed() + '%';
+	get percentageAString() {
+		return (this.valence*100).toFixed() + '%';
 	}
 
-	get color() {
-		return chroma.mix('red', 'green', this.percent, 'hsl').hex();
+	get percentageBString() {
+		return (this.energy*100).toFixed() + '%';
+	}
+
+	get colorA() {
+		return chroma.mix('red', 'green', this.valence, 'hsl').hex();
 	}
 }

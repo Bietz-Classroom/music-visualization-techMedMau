@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { SpotifyService } from 'src/app/services/spotify.service';
 import embed from 'vega-embed';
 
 @Component({
@@ -7,25 +8,78 @@ import embed from 'vega-embed';
   styleUrls: ['./vega-viz.component.css']
 })
 export class VegaVizComponent implements OnInit {
-  ngOnInit() {
-    const spec = {
-      "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
-      "description": "A simple bar chart with embedded data.",
-      "title": "Example Vega-lite Chart",
-      "data": {
-        "values": [
-          {"a": "A", "b": 28}, {"a": "B", "b": 55}, {"a": "C", "b": 43},
-          {"a": "D", "b": 91}, {"a": "E", "b": 81}, {"a": "F", "b": 53},
-          {"a": "G", "b": 19}, {"a": "H", "b": 87}, {"a": "I", "b": 52}
-        ]
-      },
-      "mark": "bar",
-      "encoding": {
-        "x": {"field": "a", "type": "nominal", "axis": {"labelAngle": 0}},
-        "y": {"field": "b", "type": "quantitative"}
-      }
-    } as const;
+  @Input() chartValues;
+  
+  constructor(private spotifyService:SpotifyService) { }
 
-    embed("#vis",spec);
+  // when chart data changed, re-generate the chart
+  ngOnChanges(changes: SimpleChanges) {
+    // console.log("CCCHANGE")
+    // console.log(this.chartValues)
+    this.generateChart();
+  }
+
+  ngOnInit() {
+    // console.log("FOR  CHHHHHART")
+    // console.log(this.chartValues)
+    this.generateChart();
+  }
+
+  generateChart(){
+    // spec for generate vega lite chart
+    const tmp = {
+      "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+      "description": "",
+      "title": "Energy/Valence visualization",
+      "data": {"values": this.chartValues},
+      "transform": [{
+        "window": [{"op": "row_number", "as": "row_number"}]
+      }],
+      "hconcat": [{
+        "params": [{"name": "brush", "select": "interval"}],
+        "mark": {"type": "circle", "size": 60, "tooltip": {"content": "data"}},
+        "encoding": {
+          "x": {"field": "energy", "type": "quantitative"},
+          "y": {"field": "valence", "type": "quantitative"},
+          "color": {
+            "condition": {"param": "brush", "type": "ordinal"},
+            "value": "grey"
+          }
+        }
+      }, {
+        "transform": [
+          {"filter": {"param": "brush"}},
+          {"window": [{"op": "rank", "as": "rank"}]},
+          {"filter": {"field": "rank", "lt": 20}}
+        ],
+        "hconcat": [{
+          "width": "length(energy)",
+          "title": "energy",
+          "mark": "text",
+          "encoding": {
+            "text": {"field": "energy", "type": "nominal"},
+            "y": {"field": "row_number", "type": "ordinal", "axis": null}
+          }
+        }, {
+          "width": "length(valence)",
+          "title": "valence",
+          "mark": "text",
+          "encoding": {
+            "text": {"field": "valence", "type": "nominal"},
+            "y": {"field": "row_number", "type": "ordinal", "axis": null}
+          }
+        }, {
+          "width": "length(name)",
+          "title": "name",
+          "mark": "text",
+          "encoding": {
+            "text": {"field": "name", "type": "nominal"},
+            "y": {"field": "row_number", "type": "ordinal", "axis": null}
+          }
+        }]
+      }],
+      "resolve": {"legend": {"color": "independent"}}
+    } as any;
+    embed("#vis",tmp);
   }
 }

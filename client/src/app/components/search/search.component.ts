@@ -1,8 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { SpotifyService } from '../../services/spotify.service';
-import { ArtistData } from '../../data/artist-data';
-import { AlbumData } from '../../data/album-data';
-import { TrackData } from '../../data/track-data';
 import { ResourceData } from '../../data/resource-data';
 
 @Component({
@@ -12,17 +9,47 @@ import { ResourceData } from '../../data/resource-data';
   providers: [ SpotifyService ]
 })
 export class SearchComponent implements OnInit {
-  searchString:string;
+  @Output() dataEvent: EventEmitter<ResourceData[]> = new EventEmitter<ResourceData[]>();
+  searchString:string = '';
   searchCategory:string = 'playlist';
   resources:ResourceData[];
+  warningText:string = '';
 
   constructor(private spotifyService:SpotifyService) { }
 
   ngOnInit() {
   }
+  
+
+  passData() {
+    // console.log("search pass data to home")
+    this.dataEvent.emit(this.resources);
+  }
 
   search() {
-    //TODO: call search function in spotifyService and parse response
+    // show warning when no input
+    if(this.searchString === null || this.searchString === ''){
+      this.warningText = "Please enter words for searching"
+      return;
+    }else{
+      this.warningText = '';
+    }
+
+    // get playlist data from API
+    this.spotifyService.searchFor(this.searchCategory, this.searchString)
+    .then(data=>{
+      console.log(data)
+      this.resources = data
+      // show warning when no result
+      if(this.resources.length === 0){
+        this.warningText = "No result"
+      }else{
+        this.warningText = "";
+      }
+      this.passData()
+    }).catch(error => {
+      console.error('Search component: ', error);
+    });
   }
 
 }

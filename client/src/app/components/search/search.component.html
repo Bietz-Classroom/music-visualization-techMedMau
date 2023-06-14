@@ -1,7 +1,10 @@
-<h1>Search Spotify</h1>
-<!--TODO: bind input's model to searchString-->
-<input>
+<h1 class="text-center mt-3">Search Spotify</h1>
+<div class="d-flex justify-content-center mb-2">
+    <label for="search" style="display: none;">Search:</label>
+    <input type="text" placeholder="Search for playlist" id="search" autofocus [(ngModel)]="searchString">
+    <!--TODO: Call search function when the button is clicked-->
+    <button class="btn btn-light" (click)="search()">Search</button>
+</div>
 
-<!--TODO: Call search function when the button is clicked-->
-<button class="btn btn-light">Search</button>
+<p class="bg-danger text-white rounded rounded-3 pt-1 pb-1 pl-2 pr-2" style="width: max-content" *ngIf="warningText">{{warningText}}!!!</p>
 <!--TODO: Display results. One option: use a carousel component. Bind carousel's resources and give it a static carouselId.-->

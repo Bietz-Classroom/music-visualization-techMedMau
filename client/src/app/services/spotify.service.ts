@@ -4,9 +4,9 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { ArtistData } from '../data/artist-data';
 import { AlbumData } from '../data/album-data';
 import { TrackData } from '../data/track-data';
-import { ResourceData } from '../data/resource-data';
 import { ProfileData } from '../data/profile-data';
 import { TrackFeature } from '../data/track-feature';
+import { PlaylistData } from '../data/playlist-data';
 
 @Injectable({
   providedIn: 'root'
@@ -33,12 +33,27 @@ export class SpotifyService {
     });
   }
 
-  searchFor(category:string, resource:string):Promise<ResourceData[]> {
+  searchFor(category:string, resource:string):Promise<PlaylistData[]> {
     //TODO: identify the search endpoint in the express webserver (routes/index.js) and send the request to express.
     //Make sure you're encoding the resource with encodeURIComponent().
     //Depending on the category (artist, track, album, playlist, etc.), return an array of that type of data.
     //JavaScript's "map" function might be useful for this, but there are other ways of building the array.
-    return null as any;
+  const encodedResource = encodeURIComponent(resource);
+  const url = `/search/${category}/${encodedResource}`;
+
+  const allData: PlaylistData[] = [];
+  return this.sendRequestToExpress(url)
+    .then(data => {
+      console.log("spotify.service | playlist data - ", data)
+      data.playlists.items.forEach(element => {
+        allData.push(new PlaylistData(element))
+      });
+      return allData;
+    })
+    .catch(error => {
+      console.error('Error occurred while searching:', error);
+      return [];
+    });
   }
 
   getArtist(artistId:string):Promise<ArtistData> {
@@ -49,7 +64,7 @@ export class SpotifyService {
 
   getRelatedArtists(artistId:string):Promise<ArtistData[]> {
     //TODO: use the related artist endpoint to make a request to express and return an array of artist data.
-   return null as any;
+    return null as any;
   }
 
   getTopTracksForArtist(artistId:string):Promise<TrackData[]> {
@@ -74,11 +89,53 @@ export class SpotifyService {
 
   getTrack(trackId:string):Promise<TrackData> {
     //TODO: use the track endpoint to make a request to express.
-    return null as any;
+    const encodedResource = encodeURIComponent(trackId);
+    const url = `/track/${encodedResource}`;
+    return this.sendRequestToExpress(url)
+    .then((data) => {
+      console.log("spotify.service | track - ", data)
+      return new TrackData(data)
+    }).catch(error => {
+      console.error('Error occurred while searching:', error);
+      return null;
+    });
+  }
+
+  getTracksForPlaylist(trackId:string):Promise<TrackData[]>{
+    const allTracks:TrackData[] = []
+    const encodedResource = encodeURIComponent(trackId);
+    const url = `/${encodedResource}/tracks`;
+    return this.sendRequestToExpress(url)
+    .then((data) => {
+      console.log("spotify.service | tracks data - ", data)
+      data.items.forEach(element => {
+        if(element !== null){
+          allTracks.push(new TrackData(element['track']))
+        }
+      });
+      return allTracks;
+    }).catch(error => {
+      console.error('Error occurred while searching:', error);
+      return [];
+    });
   }
 
   getAudioFeaturesForTrack(trackId:string):Promise<TrackFeature[]> {
     //TODO: use the audio features for track endpoint to make a request to express.
-    return null as any;
+    const allFeatures:TrackFeature[] = []
+    const encodedResource = encodeURIComponent(trackId);
+    const url = `/track-audio-features/${encodedResource}`;
+    return this.sendRequestToExpress(url).then((data) => {
+      console.log("spotify.service | feature - ", data)
+      data.audio_features.forEach(element => {
+        if(element !== null){
+          allFeatures.push(new TrackFeature(element))
+        }
+      });
+      return allFeatures;
+    }).catch(error => {
+      console.error('Error occurred while searching:', error);
+      return [];
+    });
   }
 }
